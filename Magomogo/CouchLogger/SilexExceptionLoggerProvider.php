@@ -12,16 +12,8 @@ class SilexExceptionLoggerProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app->error(
-            function (\Exception $ex, $code) use ($app)
-            {
-                file_get_contents(
-                    $app['couchLogger.uri'] ?: 'http://127.0.0.1:5984/logger-application/_design/main/_rewrite/new',
-                    null,
-                    self::postStream($ex, $app['couchLogger.channel'] ?: 'default')
-                );
-            }
-        );
+        $app['couchLogger.uri'] = 'http://127.0.0.1:5984/logger-application/_design/main/_rewrite/new';
+        $app['couchLogger.channel'] = 'default';
     }
 
     /**
@@ -29,6 +21,17 @@ class SilexExceptionLoggerProvider implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
+        $app->error(
+            function (\Exception $ex, $code) use ($app)
+            {
+                file_get_contents(
+                    $app['couchLogger.uri'],
+                    null,
+                    self::postStream($ex, $app['couchLogger.channel'])
+                );
+            },
+            -4 // register before standard handlers
+        );
     }
 
     /**
