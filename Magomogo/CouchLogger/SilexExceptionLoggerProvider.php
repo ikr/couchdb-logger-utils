@@ -50,7 +50,7 @@ class SilexExceptionLoggerProvider implements ServiceProviderInterface
                         array(
                             'message' => $ex->getMessage(),
                             'channel' => $channel ,
-                            'trace' => $ex->getTrace()
+                            'trace' => $ex->getTraceAsString()
                         )
                     )
                 )
